@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .chat-container { height: calc(100vh - 180px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans">
+    <div class="container mx-auto p-4 flex flex-col h-screen">
+        <h1 class="text-4xl font-bold mb-6 text-center text-blue-400">AI Assistant</h1>
+        <div id="chatWindow" class="chat-container bg-gray-800 rounded-lg shadow-lg p-4 mb-4 overflow-y-auto"></div>
+        <div class="flex space-x-2">
+            <input type="text" id="queryInput" placeholder="Ask me anything..." class="flex-grow p-3 rounded-l-lg border-2 border-blue-500 bg-gray-700 text-white focus:outline-none focus:border-blue-400">
+            <button id="sendQuery" class="bg-blue-500 text-white px-6 py-3 rounded-r-lg hover:bg-blue-600 transition duration-300">Send</button>
+            <button id="voiceQuery" class="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>

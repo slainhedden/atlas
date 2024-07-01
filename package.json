@@ -1,0 +1,10 @@
+{
+  "main": "src/main/index.js",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "electron": "^31.1.0"
+  },
+  "scripts": {
+    "start": "electron ."
+  }
+}
