@@ -1,9 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require('electron'); // Downloads and installs the necessary packages for creating and managing electron apps
-const path = require('path'); 
-const axios = require('axios'); // For making HTTP requests to Flask Backend
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const axios = require('axios');
 
 let mainWindow;
-const FLASK_URL = 'http://127.0.0.1:5000/';
+const FLASK_URL = 'http://127.0.0.1:5000';
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -57,16 +57,15 @@ function createWindow() {
     // Handle stop recording request
     ipcMain.on('stopRecording', async (event) => {
         try {
-            const response = await axios.post(`${FLASK_URL}/api/stop_recording`); //calls flask endpoint in python
-            event.reply('recordingStopped', response.data.result); // sends the response back to the renderer
+            const response = await axios.post(`${FLASK_URL}/api/stop_recording`);
+            event.reply('recordingStopped', response.data.result);
         } catch (error) {
             console.error('Error stopping recording:', error);
             event.reply('recordingStopped', 'Error: Unable to stop recording');
         }
     });
-
 }
-    
+
 let screenshotInterval;
 
 function startScreenshotCapture() {
@@ -86,7 +85,6 @@ function stopScreenshotCapture() {
         .then(() => console.log('Screenshots cleared'))
         .catch(error => {
             console.error('Error clearing screenshots:', error);
-            // Optionally, you can notify the renderer process about this error
         });
 }
 
@@ -108,5 +106,5 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
     if (mainWindow === null) {
         createWindow();
-    }  
+    }
 });

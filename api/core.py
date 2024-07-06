@@ -33,11 +33,15 @@ class ScreenshotSettings(BaseModel):
 These classes are used for:
 1. Validation: When a request is made to your FastAPI endpoints that use these models, FastAPI automatically validates the 
 incoming request data against these models. if the data does not match the expected format or types, FastAPI will return a
-422 Unprocessable Entity response
-2. Type Safety: These models provide type hints, which help with code readability and type checking in IDEs
+422 Unprocessable Entity response.
+2. Type Safety: These models provide type hints, which help with code readability and type checking in IDEs.
 3. Data Parsing: The models parse and convert incoming JSON data into Python objects, making it easier to work with the data in your endpoint
 functions.
 '''
+
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the FastAPI application"}
 
 @app.post("/api/start_recording")
 async def start_recording():
@@ -104,9 +108,11 @@ async def clear_images():
     screenshot_handler.cleanup()
     return JSONResponse(content={'status': 'success'})
 
+
+
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000, debug=True)
+    uvicorn.run(app, host="0.0.0.0", port=5000)
 
     
 ###########################################
