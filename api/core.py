@@ -1,14 +1,20 @@
 import os
 import pathlib
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
-from utility.screenshot_handler import ScreenshotHandler
-from llm.ai_handler import AIAssistant
 import threading
 import queue
 import time
-from utility.audio_handler import AudioRecorder
 from pydantic import BaseModel
+
+# Fast API imports
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
+
+# Utility imports
+from utility.audio_handler import AudioRecorder
+from utility.codebase_handler import CodeHelper
+from utility.screenshot_handler import ScreenshotHandler
+from llm.ai_handler import AIAssistant
+
 
 app = FastAPI()
 
@@ -16,6 +22,7 @@ app = FastAPI()
 screenshot_handler = ScreenshotHandler(max_screenshots=15, compression_quality=85)
 ai_assistant = AIAssistant()
 audio_recorder = AudioRecorder()
+code_helper = CodeHelper()
 
 class Query(BaseModel):
     query: str
@@ -74,6 +81,35 @@ async def process_query(query: Query):
         response = ai_assistant.get_response()
     
     return JSONResponse(content={'response': response})
+
+@app.post("/api/code_query")
+async def process_code_query(query: Query):
+    if not query.query:
+        raise HTTPException(status_code=400, detail='No path provided')
+
+    try:
+        codebase_content = code_helper.analyze_codebase(query.query)
+        print(f"Codebase content length: {len(codebase_content)}")  # Add this line for debugging
+        prompt = f"Analyze the following codebase and provide insights or answer questions about it:\n\n{codebase_content}"
+        
+        ai_assistant.process_query(prompt, [])
+        
+        response = None
+        timeout = 30  # Set a timeout of 30 seconds
+        start_time = time.time()
+        while response is None and time.time() - start_time < timeout:
+            response = ai_assistant.get_response()
+            if response is None:
+                await asyncio.sleep(0.5)
+        
+        if response is None:
+            raise TimeoutError("AI assistant did not respond in time")
+        
+        return JSONResponse(content={'response': response})
+    except Exception as e:
+        print(f"Error in process_code_query: {str(e)}")
+        raise HTTPException(status_code=500, detail=f'Error processing code query: {str(e)}')
+
 
 @app.post("/api/screenshot")
 async def capture_screenshot():

@@ -3,7 +3,7 @@ const path = require('path');
 const axios = require('axios');
 
 let mainWindow;
-const FLASK_URL = 'http://127.0.0.1:5000';
+const FAST_URL = 'http://127.0.0.1:5000';
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -24,7 +24,7 @@ function createWindow() {
     // Handle query requests from renderer
     ipcMain.on('query', async (event, query) => {
         try {
-            const response = await axios.post(`${FLASK_URL}/api/query`, { query });
+            const response = await axios.post(`${FAST_URL}/api/query`, { query });
             event.reply('queryResponse', response.data.response);
         } catch (error) {
             console.error('Error querying AI:', error);
@@ -35,7 +35,7 @@ function createWindow() {
     // Handle screenshot capture requests from renderer
     ipcMain.on('captureScreenshot', async (event) => {
         try {
-            const response = await axios.post(`${FLASK_URL}/api/screenshot`);
+            const response = await axios.post(`${FAST_URL}/api/screenshot`);
             event.reply('screenshotCaptured', response.data.filepath);
         } catch (error) {
             console.error('Error capturing screenshot:', error);
@@ -46,7 +46,7 @@ function createWindow() {
     // Handle start recording request
     ipcMain.on('startRecording', async (event) => {
         try {
-            const response = await axios.post(`${FLASK_URL}/api/start_recording`);
+            const response = await axios.post(`${FAST_URL}/api/start_recording`);
             event.reply('recordingStarted', response.data.status);
         } catch (error) {
             console.error('Error starting recording:', error);
@@ -57,11 +57,23 @@ function createWindow() {
     // Handle stop recording request
     ipcMain.on('stopRecording', async (event) => {
         try {
-            const response = await axios.post(`${FLASK_URL}/api/stop_recording`);
+            const response = await axios.post(`${FAST_URL}/api/stop_recording`);
             event.reply('recordingStopped', response.data.result);
         } catch (error) {
             console.error('Error stopping recording:', error);
             event.reply('recordingStopped', 'Error: Unable to stop recording');
+        }
+    });
+
+    ipcMain.on('codeQuery', async (event, path) => {
+        try {
+            console.log('Received code query for path:', path);
+            const response = await axios.post(`${FAST_URL}/api/code_query`, { query: path });
+            console.log('Code query response:', response.data);
+            event.reply('codeQueryResponse', response.data.response);
+        } catch (error) {
+            console.error('Error processing code query:', error.response ? error.response.data : error.message);
+            event.reply('codeQueryResponse', `Error: Unable to process code query. ${error.response ? error.response.data : error.message}`);
         }
     });
 }
@@ -71,7 +83,7 @@ let screenshotInterval;
 function startScreenshotCapture() {
     screenshotInterval = setInterval(async () => {
         try {
-            const response = await axios.post(`${FLASK_URL}/api/screenshot`);
+            const response = await axios.post(`${FAST_URL}/api/screenshot`);
             console.log('Screenshot captured:', response.data.filepath);
         } catch (error) {
             console.error('Error capturing screenshot:', error);
@@ -81,7 +93,7 @@ function startScreenshotCapture() {
 
 function stopScreenshotCapture() {
     clearInterval(screenshotInterval);
-    axios.post(`${FLASK_URL}/api/chat/closed`)
+    axios.post(`${FAST_URL}/api/chat/closed`)
         .then(() => console.log('Screenshots cleared'))
         .catch(error => {
             console.error('Error clearing screenshots:', error);

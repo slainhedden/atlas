@@ -72,4 +72,50 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessageToChatWindow('AI', transcription);
         ipcRenderer.send('query', transcription); // Send the transcribed text as a query
     });
+
+    const codeQueryBtn = document.getElementById('codeQuery');
+    console.log('Code Query Button:', codeQueryBtn); // Debug log
+
+    function showPathInput() {
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center';
+        inputContainer.innerHTML = `
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <input type="text" id="pathInput" placeholder="Enter the path to your codebase" class="p-2 w-full mb-2 bg-gray-700 text-white rounded">
+                <div class="flex justify-end">
+                    <button id="submitPath" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Submit</button>
+                    <button id="cancelPath" class="bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(inputContainer);
+
+        document.getElementById('submitPath').addEventListener('click', () => {
+            const path = document.getElementById('pathInput').value;
+            if (path) {
+                console.log('Entered path:', path); // Debug log
+                ipcRenderer.send('codeQuery', path);
+            }
+            document.body.removeChild(inputContainer);
+        });
+
+        document.getElementById('cancelPath').addEventListener('click', () => {
+            document.body.removeChild(inputContainer);
+        });
+    }
+
+    codeQueryBtn.addEventListener('click', () => {
+        console.log('Code Query Button Clicked'); // Debug log
+        showPathInput();
+    });
+
+    ipcRenderer.on('codeQueryResponse', (event, response) => {
+        console.log('Received code query response:', response);
+        if (response.startsWith('Error:')) {
+            addMessageToChatWindow('System', response);
+        } else {
+            addMessageToChatWindow('AI', response);
+        }
+    });
+
 });

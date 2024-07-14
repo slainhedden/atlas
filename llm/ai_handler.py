@@ -32,7 +32,7 @@ class AIAssistant:
                 'data': pathlib.Path(path).read_bytes()
             })
         
-        prompt = f"The user can speak to you through transcription. Here is there prompt: {query}\nHere are the last screenshots of their screen for context. Please analyze these images and provide a helpful response."
+        prompt = f"{query}\nHere are the last screenshots of their screen for context. Please analyze these images and provide a helpful response."
         
         response = chat.send_message([prompt] + images)
         return response.text
