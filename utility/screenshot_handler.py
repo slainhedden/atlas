@@ -1,6 +1,7 @@
 import pyautogui
 import os
 import time
+import pytesseract
 from PIL import Image
 import io
 import threading
