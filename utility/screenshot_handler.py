@@ -10,7 +10,6 @@ from mss import mss
 import sys
 import pygetwindow as gw
 from screeninfo import get_monitors
-import win32gui # This is a module that allows us to interact with the Windows operating system
 import ctypes
 
 class ScreenshotHandler:
