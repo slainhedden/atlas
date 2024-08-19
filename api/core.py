@@ -39,8 +39,11 @@ incoming request data against these models. if the data does not match the expec
 functions.
 '''
 
+# Create a feature that screenshots the current screen that we are working on currently
+
 @app.get("/")
 async def root():
+    # Take a screenshot immediately when the application starts.
     return {"message": "Welcome to the FastAPI application"}
 
 @app.post("/api/start_recording")
@@ -107,8 +110,6 @@ async def save_chat(chat_content: ChatContent):
 async def clear_images():
     screenshot_handler.cleanup()
     return JSONResponse(content={'status': 'success'})
-
-
 
 if __name__ == '__main__':
     import uvicorn
